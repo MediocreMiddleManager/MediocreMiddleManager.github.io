@@ -1,0 +1,17 @@
+#!/bin/bash
+
+exec 1>&2
+
+PUBLIC_RULES="$(dirname $0)/public_rules"
+if [ ! -r $PUBLIC_RULES ]; then
+    echo "Can't find $PUBLIC_RULES!"
+    exit 1
+fi
+. $PUBLIC_RULES
+
+if [ "$REQUIRED_NAME" != "$(git config --get user.name)" -o "$REQUIRED_EMAIL" != "$(git config --get user.email)" -o "$REQUIRED_NAME" != "$GIT_AUTHOR_NAME" -o "$REQUIRED_EMAIL" != "$GIT_AUTHOR_EMAIL" ]; then
+    echo "Won't commit--only $REQUIRED_NAME <$REQUIRED_EMAIL> is allowed as author or committer"
+    echo "Attempted committer: $(git config --get user.name) <$(git config --get user.email)>"
+    echo "Attempted author: $GIT_AUTHOR_NAME <$GIT_AUTHOR_EMAIL>"
+    exit 1
+fi

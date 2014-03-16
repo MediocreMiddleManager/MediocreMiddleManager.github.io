@@ -1,0 +1,25 @@
+#!/bin/bash
+
+PUBLIC_RULES="$(dirname $0)/public_rules"
+if [ ! -r $PUBLIC_RULES ]; then
+    echo "Can't find $PUBLIC_RULES!"
+    exit 1
+fi
+. $PUBLIC_RULES
+ 
+while read OLDVALUE NEWVALUE REF; do 
+    echo Checking "$NEWVALUE" for correct author/committer while updating "$REF"...
+    for AC in a c; do
+        if [ "a" = "$AC" ]; then ACTYPE="author"; else ACTYPE="committer"; fi
+        for NE in n e; do
+            if [ "n" = "$NE" ]; then REQIDENT="$REQUIRED_NAME"; else REQIDENT="$REQUIRED_EMAIL"; fi
+            git log "$NEWVALUE" --pretty="%h %${AC}${NE}" | while read REF ACNAME; do
+                if [ "$REQIDENT" != "$ACNAME" ]; then
+                    echo "Wrong ${ACTYPE} - should be $REQIDENT instead of $ACNAME:"
+                    git log "$REF" -1 --format=fuller
+                    exit 1
+                fi
+            done || exit 1
+        done
+    done
+done

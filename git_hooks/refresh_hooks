@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+HOOKS_BRANCH=hooks
+HOOKS_PATH=git_hooks
+GIT_DIR="$(git rev-parse --git-dir)"
+git ls-tree "$HOOKS_BRANCH:$HOOKS_PATH/" | while read MODE TYPE SHA FL; do
+    git show "$HOOKS_BRANCH:$HOOKS_PATH/$FL" > "$GIT_DIR/hooks/$FL"
+    MODE=${MODE:0-3:3}
+    chmod $MODE "$GIT_DIR/hooks/$FL"
+done

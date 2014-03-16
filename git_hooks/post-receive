@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+GIT_DIR="$(git rev-parse --git-dir)"
+
+while read OLDVALUE NEWVALUE REF; do
+    if [ "${REF#refs/heads/}" = "hooks" ]; then
+        echo "Updating the git hooks"
+        "$GIT_DIR/hooks/refresh_hooks"
+    fi
+done
