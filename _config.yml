@@ -1,6 +1,6 @@
 name: Mediocre Middle Manager
 subtitle: Wear the mask for long enough and it becomes your face
 markdown: kramdown
-pygments: true
+highlighter: true
 exclude: 
   - git_hooks
